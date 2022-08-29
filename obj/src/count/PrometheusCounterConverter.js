@@ -97,6 +97,9 @@ class PrometheusCounterConverter {
         return builder;
     }
     static parseCounterName(counter) {
+        let replaceAll = (cunterName) => {
+            return cunterName.replace(new RegExp('[\.+\/]', 'g'), '_');
+        };
         if (counter == null && counter.name == null && counter.name == "")
             return "";
         let nameParts = counter.name.split('.');
@@ -126,12 +129,11 @@ class PrometheusCounterConverter {
             || (nameParts.length >= 3 && nameParts[2] == "received_messages")
             || (nameParts.length >= 3 && nameParts[2] == "dead_messages")) {
             let name = `${nameParts[0]}.${nameParts[2]}`;
-            return name.toLowerCase().replace(".", "_").replace("/", "_");
+            return replaceAll(name.toLowerCase());
         }
         // TODO: are there other assumptions we can make?
         // Or just return as a single, valid name
-        return counter.name.toLowerCase()
-            .replace(".", "_").replace("/", "_");
+        return replaceAll(counter.name.toLowerCase());
     }
     static parseCounterLabels(counter, source, instance) {
         let labels = {};
